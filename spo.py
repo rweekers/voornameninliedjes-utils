@@ -7,8 +7,9 @@ import psycopg2
 conn = psycopg2.connect("dbname=voornameninliedjes user=remco")
 cur = conn.cursor()
 cur.execute("SELECT * FROM song;")
+results = cur.fetchall()
 
-for row in cur:
+for row in results:
     artist = row[1]
     a_id = str(row[0])
     question = {'q' : artist, 'type' : 'artist'}
@@ -18,10 +19,11 @@ for row in cur:
         artist_id = data["artists"]["items"][0]["id"]
         SQL = "UPDATE song SET artist_spotify_id = %s WHERE id = %s;"
         cur.execute(SQL, [artist_id, row[0]])
-        print(cur.query)
     else:
     	artist_id = "unknown"
     print(artist + " with id " + a_id + " has spotify id " + artist_id)
+
+conn.commit()
 
 cur.close()
 conn.close()
